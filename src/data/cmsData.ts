@@ -1,7 +1,7 @@
 import type { CMSVendor, DashboardData, MigrationScenario, RiskAssessment } from '../types/cms';
 
 export const cmsVendors: CMSVendor[] = [
-  // Priority 1: Sanity (Most loved)
+  // Priority 1: Sanity (First Choice from doc.md)
   {
     id: 'sanity',
     name: 'Sanity',
@@ -72,7 +72,7 @@ export const cmsVendors: CMSVendor[] = [
     }
   },
   
-  // Priority 2: Craft CMS (Second choice)
+  // Priority 2: Craft CMS (Second Choice from doc.md)
   {
     id: 'craft',
     name: 'Craft CMS',
@@ -143,7 +143,7 @@ export const cmsVendors: CMSVendor[] = [
     }
   },
   
-  // Priority 3: Strapi (Third choice)
+  // Priority 3: Strapi (Third Choice from doc.md)
   {
     id: 'strapi',
     name: 'Strapi',
@@ -214,7 +214,7 @@ export const cmsVendors: CMSVendor[] = [
     }
   },
   
-  // Additional vendors (lower priority)
+  // Priority 4: Contentful (Additional from doc.md analysis)
   {
     id: 'contentful',
     name: 'Contentful',
@@ -285,7 +285,7 @@ export const cmsVendors: CMSVendor[] = [
     }
   },
   
-  // WordPress - The Monolithic Veteran (from comprehensive analysis)
+  // Priority 6: WordPress (Monolithic veteran from doc.md)
   {
     id: 'wordpress',
     name: 'WordPress',
@@ -356,6 +356,7 @@ export const cmsVendors: CMSVendor[] = [
     }
   },
 
+  // Priority 5: Storyblok (Visual editing focus from doc.md)
   {
     id: 'storyblok',
     name: 'Storyblok',
@@ -426,85 +427,15 @@ export const cmsVendors: CMSVendor[] = [
     }
   },
 
-  // Ghost - The Publishing Platform
-  {
-    id: 'ghost',
-    name: 'Ghost',
-    type: 'Blog-first',
-    hosting: 'Self-host/SaaS',
-    apiModel: 'JSON API',
-    priority: 7,
-    features: {
-      editorUx: 4,
-      visualEditing: 2,
-      previewSpeed: 4,
-      modelingFlex: 2,
-      apiPower: 2,
-      rolesRbac: 3,
-      sso: 3,
-      compliance: 2,
-      localization: 1,
-      releasesScheduling: 2,
-      seoTooling: 3,
-      perfCdn: 4,
-      extensibility: 2
-    },
-    weightedScores: {
-      editorUx: 4,
-      visualEditingPreview: 2,
-      modelingFlexibility: 2,
-      developerExperience: 2,
-      apiPower: 2,
-      governanceSecurity: 2,
-      opsTco: 3,
-      ecosystemIntegrations: 2,
-      localizationScheduling: 2
-    },
-    totalScore: 48,
-    cost: {
-      licenseSaas: 'Low',
-      hosting: 'Low',
-      pluginsApps: 'Low',
-      opsTime: 'Low',
-      estimatedTotal: 'Low'
-    },
-    migration: {
-      effort: 'Low',
-      timeWeeks: 3,
-      complexity: 'Simple blog-focused migration with content import tools',
-      risks: ['Limited content modeling flexibility'],
-      steps: [
-        'Set up Ghost installation or Ghost Pro account',
-        'Import blog content from HubSpot',
-        'Configure theme and basic customizations',
-        'Set up newsletter and membership features',
-        'Launch and configure SEO settings'
-      ]
-    },
-    metadata: {
-      soc2: false,
-      ssoAvailable: false,
-      livePreview: false,
-      pluginMarket: false,
-      notes: 'Distraction-free publishing platform with built-in memberships and newsletters',
-      bestFor: 'Publishers, newsletters, and content-first teams prioritizing simplicity and monetization',
-      highlights: [
-        'Distraction-free markdown editor',
-        'Built-in membership and subscription features',
-        'Strong SEO optimization tools',
-        'Focus on publishing and newsletters'
-      ]
-    }
-  },
 
-  // Webflow CMS - The Visual Builder
+  // Priority 7: Webflow CMS (Visual no-code builder from doc.md)
   {
     id: 'webflow',
     name: 'Webflow CMS',
     type: 'Coupled/Headless-lite',
     hosting: 'SaaS',
     apiModel: 'REST/GraphQL (limited)',
-    priority: 8,
+    priority: 7,
     features: {
       editorUx: 4,
       visualEditing: 4,
@@ -557,155 +488,13 @@ export const cmsVendors: CMSVendor[] = [
       ssoAvailable: true,
       livePreview: true,
       pluginMarket: true,
-      notes: 'Visual no-code builder with CMS collections, design-first approach',
-      bestFor: 'Marketing websites, landing pages, design-driven teams without heavy development needs',
+      notes: 'Visual no-code builder with CMS collections. Limited customization beyond platform constraints but excellent for design-driven teams.',
+      bestFor: 'Marketing websites, landing pages, design-driven teams needing visual editing without developer dependency',
       highlights: [
         'WYSIWYG visual design interface',
-        'Clean, semantic code generation',
-        'Strong visual editor for marketers',
-        'Built-in hosting and CDN'
-      ]
-    }
-  },
-
-  // Payload CMS - The TypeScript-First Platform
-  {
-    id: 'payload',
-    name: 'Payload CMS',
-    type: 'Headless OSS',
-    hosting: 'Self-host',
-    apiModel: 'REST/GraphQL',
-    priority: 9,
-    features: {
-      editorUx: 3,
-      visualEditing: 2,
-      previewSpeed: 3,
-      modelingFlex: 5,
-      apiPower: 5,
-      rolesRbac: 4,
-      sso: 3,
-      compliance: 4,
-      localization: 3,
-      releasesScheduling: 3,
-      seoTooling: 2,
-      perfCdn: 3,
-      extensibility: 5
-    },
-    weightedScores: {
-      editorUx: 3,
-      visualEditingPreview: 2,
-      modelingFlexibility: 5,
-      developerExperience: 5,
-      apiPower: 5,
-      governanceSecurity: 4,
-      opsTco: 3,
-      ecosystemIntegrations: 4,
-      localizationScheduling: 3
-    },
-    totalScore: 74,
-    cost: {
-      licenseSaas: 'Low',
-      hosting: 'Mid',
-      pluginsApps: 'Low',
-      opsTime: 'High',
-      estimatedTotal: 'Mid'
-    },
-    migration: {
-      effort: 'High',
-      timeWeeks: 10,
-      complexity: 'Code-first approach requires significant developer involvement and TypeScript knowledge',
-      risks: ['High technical complexity', 'Limited non-technical editor experience'],
-      steps: [
-        'Set up Node.js/TypeScript development environment',
-        'Define content schemas and models in TypeScript',
-        'Build custom admin UI components as needed',
-        'Implement content migration scripts',
-        'Deploy and configure production infrastructure'
-      ]
-    },
-    metadata: {
-      soc2: false,
-      ssoAvailable: false,
-      livePreview: false,
-      pluginMarket: false,
-      notes: 'TypeScript-first headless CMS with code-defined schemas and auto-generated APIs',
-      bestFor: 'Developer-heavy teams, compliance-driven projects requiring full control',
-      highlights: [
-        'TypeScript-first architecture',
-        'Code-defined schemas version controlled',
-        'Auto-generated REST and GraphQL APIs',
-        'Full control over hosting and data'
-      ]
-    }
-  },
-
-  // Directus - The Database-First Platform
-  {
-    id: 'directus',
-    name: 'Directus',
-    type: 'Headless OSS',
-    hosting: 'Self-host/Cloud',
-    apiModel: 'REST/GraphQL',
-    priority: 10,
-    features: {
-      editorUx: 4,
-      visualEditing: 2,
-      previewSpeed: 3,
-      modelingFlex: 4,
-      apiPower: 4,
-      rolesRbac: 5,
-      sso: 4,
-      compliance: 4,
-      localization: 3,
-      releasesScheduling: 3,
-      seoTooling: 2,
-      perfCdn: 3,
-      extensibility: 4
-    },
-    weightedScores: {
-      editorUx: 4,
-      visualEditingPreview: 2,
-      modelingFlexibility: 4,
-      developerExperience: 4,
-      apiPower: 4,
-      governanceSecurity: 5,
-      opsTco: 3,
-      ecosystemIntegrations: 4,
-      localizationScheduling: 3
-    },
-    totalScore: 72,
-    cost: {
-      licenseSaas: 'Low',
-      hosting: 'Mid',
-      pluginsApps: 'Low',
-      opsTime: 'Mid',
-      estimatedTotal: 'Mid'
-    },
-    migration: {
-      effort: 'Medium',
-      timeWeeks: 7,
-      complexity: 'Database-first approach requires SQL schema design and data migration planning',
-      risks: ['Database schema complexity', 'SQL knowledge requirements'],
-      steps: [
-        'Design and create SQL database schema',
-        'Install and configure Directus instance',
-        'Connect Directus to existing database or migrate data',
-        'Configure user roles and permissions',
-        'Build frontend applications using generated APIs'
-      ]
-    },
-    metadata: {
-      soc2: false,
-      ssoAvailable: true,
-      livePreview: false,
-      pluginMarket: false,
-      notes: 'Database-first headless CMS that turns any SQL database into APIs with auto-generated admin UI',
-      bestFor: 'Data-driven applications needing SQL-first integration with existing databases',
-      highlights: [
-        'Works directly with SQL database schema',
-        'Auto-generated admin UI from database',
-        'Granular role-based permissions',
-        'Instant REST and GraphQL APIs'
+        'Clean, semantic HTML/CSS/JS generation',
+        'Strong visual editor for marketers/designers',
+        'Managed SaaS with fast-loading pages'
       ]
     }
   }
@@ -741,32 +530,11 @@ export const migrationScenarios: MigrationScenario[] = [
     rationale: 'SOC 2 Type II on Cloud; comprehensive RBAC; enterprise-grade features'
   },
   {
-    id: 'blog-publishing',
-    name: 'Content Publishing & Newsletters',
-    description: 'Blog-focused publishing with membership and newsletter features',
-    bestCms: 'Ghost',
-    rationale: 'Distraction-free editor; built-in memberships, newsletters, and monetization'
-  },
-  {
     id: 'visual-design',
     name: 'Visual Design-First Websites',
     description: 'Marketing sites prioritizing visual design and rapid iteration',
     bestCms: 'Webflow CMS',
     rationale: 'WYSIWYG visual builder; clean code generation; designer-friendly workflow'
-  },
-  {
-    id: 'database-integration',
-    name: 'Existing Database Integration',
-    description: 'Working with existing SQL databases and data-driven applications',
-    bestCms: 'Directus',
-    rationale: 'Database-first approach; instant APIs from SQL schema; strong permissions'
-  },
-  {
-    id: 'developer-control',
-    name: 'Maximum Developer Control',
-    description: 'Code-first approach with TypeScript and version-controlled schemas',
-    bestCms: 'Payload CMS',
-    rationale: 'TypeScript-first; schemas as code; complete customization and control'
   }
 ];
 
@@ -807,32 +575,11 @@ export const riskAssessments: RiskAssessment[] = [
     mitigation: 'Implement automated security scanning; maintain regular updates; use security plugins'
   },
   {
-    risk: 'Limited content modeling (Ghost)',
-    vendor: 'Ghost',
-    likelihood: 'High',
-    impact: 'Medium',
-    mitigation: 'Evaluate content requirements against Ghost\'s blog-focused model before commitment'
-  },
-  {
     risk: 'Platform lock-in (Webflow)',
     vendor: 'Webflow CMS',
     likelihood: 'High',
     impact: 'High',
     mitigation: 'Plan export strategy; consider hybrid approach with external content management'
-  },
-  {
-    risk: 'Technical complexity (Payload)',
-    vendor: 'Payload CMS',
-    likelihood: 'Medium',
-    impact: 'High',
-    mitigation: 'Ensure team has strong TypeScript/Node.js skills; plan for extended development timeline'
-  },
-  {
-    risk: 'Database schema management (Directus)',
-    vendor: 'Directus',
-    likelihood: 'Medium',
-    impact: 'Medium',
-    mitigation: 'Establish clear database change management processes; document schema evolution'
   }
 ];
 
