@@ -9,7 +9,9 @@ import {
   Users,
   Clock,
   DollarSign,
-  AlertTriangle
+  AlertTriangle,
+  Upload,
+  FileText
 } from 'lucide-react';
 import { ScoreChart } from './ScoreChart';
 import { CMSTable } from './CMSTable';
@@ -29,6 +31,13 @@ export const Dashboard: React.FC = () => {
   const [chartType, setChartType] = useState<'radar' | 'bar'>('radar');
   const [showOnlyTop3, setShowOnlyTop3] = useState(true);
   const [compareVendors, setCompareVendors] = useState<string[]>(['sanity', 'craft', 'strapi']);
+  const [notification, setNotification] = useState<{message: string, type: 'success' | 'error'} | null>(null);
+
+  // Notification helper
+  const showNotification = (message: string, type: 'success' | 'error') => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 3000);
+  };
 
   // Auto-save to localStorage with version check
   useEffect(() => {
@@ -133,16 +142,141 @@ export const Dashboard: React.FC = () => {
     setEditingVendor(newVendor);
   };
 
-  const exportData = () => {
-    const dataStr = JSON.stringify({ vendors, exported: new Date().toISOString() }, null, 2);
+  // File-based persistence functions
+  const exportDataAsJson = () => {
+    const exportData = {
+      vendors,
+      version: '2.0',
+      exported: new Date().toISOString(),
+      metadata: {
+        totalVendors: vendors.length,
+        topChoices: vendors.filter(v => v.priority <= 3).map(v => v.name),
+        avgScore: Math.round(vendors.reduce((sum, v) => sum + v.totalScore, 0) / vendors.length)
+      }
+    };
+    
+    const dataStr = JSON.stringify(exportData, null, 2);
     const dataBlob = new Blob([dataStr], { type: 'application/json' });
     const url = URL.createObjectURL(dataBlob);
     const link = document.createElement('a');
     link.href = url;
     link.download = `cms-evaluation-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
     URL.revokeObjectURL(url);
+    showNotification('JSON data exported successfully!', 'success');
   };
+
+  const exportDataAsMarkdown = () => {
+    const sortedVendors = [...vendors].sort((a, b) => a.priority - b.priority);
+    const date = new Date().toLocaleDateString();
+    
+    const markdown = `# CMS Evaluation Report
+
+*Generated on ${date}*
+
+## Executive Summary
+
+- **Total CMS Platforms Evaluated**: ${vendors.length}
+- **Average Score**: ${Math.round(vendors.reduce((sum, v) => sum + v.totalScore, 0) / vendors.length)}/100
+- **Top 3 Choices**: ${sortedVendors.slice(0, 3).map(v => v.name).join(', ')}
+
+## Detailed Analysis
+
+${sortedVendors.map(vendor => `### ${vendor.priority}. ${vendor.name} (${vendor.totalScore}/100)
+
+**Type**: ${vendor.type}  
+**Hosting**: ${vendor.hosting}  
+**API Model**: ${vendor.apiModel}
+
+**Migration Timeline**: ${vendor.migration.timeWeeks} weeks (${vendor.migration.effort} effort)
+
+**Key Strengths**:
+${vendor.metadata.highlights.map(h => `- ${h}`).join('\n')}
+
+**Best For**: ${vendor.metadata.bestFor}
+
+**Migration Steps**:
+${vendor.migration.steps.map((step, i) => `${i + 1}. ${step}`).join('\n')}
+
+**Risks**:
+${vendor.migration.risks.map(risk => `⚠️ ${risk}`).join('\n')}
+
+**Estimated Cost**: ${vendor.cost.estimatedTotal}
+
+---
+`).join('\n')}
+
+## Migration Comparison
+
+| CMS | Score | Migration Time | Effort | Est. Cost |
+|-----|-------|----------------|--------|-----------|
+${sortedVendors.map(v => `| ${v.name} | ${v.totalScore}/100 | ${v.migration.timeWeeks}w | ${v.migration.effort} | ${v.cost.estimatedTotal} |`).join('\n')}
+
+## Recommendations
+
+Based on this analysis, the recommended priority order is:
+
+${sortedVendors.slice(0, 3).map((v, i) => `${i + 1}. **${v.name}** - ${v.metadata.bestFor}`).join('\n')}
+`;
+
+    const dataBlob = new Blob([markdown], { type: 'text/markdown' });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `cms-evaluation-report-${new Date().toISOString().split('T')[0]}.md`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    showNotification('Markdown report exported successfully!', 'success');
+  };
+
+  const importDataFromJson = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = (event) => {
+      const file = (event.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const content = e.target?.result as string;
+          const importedData = JSON.parse(content);
+          
+          // Validate the imported data
+          if (importedData.vendors && Array.isArray(importedData.vendors)) {
+            // Update localStorage with imported data
+            const dataToSave = {
+              vendors: importedData.vendors,
+              version: '2.0',
+              lastUpdated: new Date().toISOString()
+            };
+            localStorage.setItem('cms-dashboard-data', JSON.stringify(dataToSave));
+            
+            // Update state
+            setVendors(importedData.vendors);
+            showNotification(`Successfully imported ${importedData.vendors.length} CMS platforms!`, 'success');
+          } else {
+            showNotification('Invalid file format. Please select a valid CMS dashboard JSON file.', 'error');
+          }
+        } catch (error) {
+          console.error('Import error:', error);
+          showNotification('Error reading file. Please check the file format.', 'error');
+        }
+      };
+      reader.readAsText(file);
+    };
+    document.body.appendChild(input);
+    input.click();
+    document.body.removeChild(input);
+  };
+
+  // Keep the old function name for backward compatibility
+  const exportData = exportDataAsJson;
 
   const filteredVendors = showOnlyTop3 ? 
     vendors.sort((a, b) => a.priority - b.priority).slice(0, 3) :
@@ -187,22 +321,60 @@ export const Dashboard: React.FC = () => {
               </div>
             </div>
             <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+              {/* Export Dropdown */}
+              <div className="relative group">
+                <button
+                  className="hidden sm:flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  aria-label="Export options"
+                >
+                  <Download size={16} aria-hidden="true" />
+                  <span className="hidden md:inline">Export</span>
+                  <span className="text-xs">▼</span>
+                </button>
+                <div className="absolute right-0 top-full mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <button
+                    onClick={exportDataAsJson}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 rounded-t-lg"
+                  >
+                    <Download size={14} />
+                    Export JSON
+                  </button>
+                  <button
+                    onClick={exportDataAsMarkdown}
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 rounded-b-lg"
+                  >
+                    <FileText size={14} />
+                    Export Report (MD)
+                  </button>
+                </div>
+              </div>
+              
+              {/* Import Button */}
               <button
-                onClick={exportData}
+                onClick={importDataFromJson}
                 className="hidden sm:flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                aria-label="Export dashboard data as JSON"
+                aria-label="Import dashboard data from JSON"
               >
-                <Download size={16} aria-hidden="true" />
-                <span className="hidden md:inline">Export Data</span>
-                <span className="md:hidden">Export</span>
+                <Upload size={16} aria-hidden="true" />
+                <span className="hidden md:inline">Import</span>
               </button>
+              
+              {/* Mobile Export/Import */}
               <button
-                onClick={exportData}
+                onClick={exportDataAsJson}
                 className="sm:hidden p-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 aria-label="Export dashboard data as JSON"
               >
                 <Download size={16} aria-hidden="true" />
               </button>
+              <button
+                onClick={importDataFromJson}
+                className="sm:hidden p-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                aria-label="Import dashboard data"
+              >
+                <Upload size={16} aria-hidden="true" />
+              </button>
+              
               <button
                 onClick={handleAddVendor}
                 className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
@@ -241,6 +413,34 @@ export const Dashboard: React.FC = () => {
           </div>
         </div>
       </nav>
+
+      {/* Notification Toast */}
+      {notification && (
+        <div className={`fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg border-l-4 transition-all duration-300 ${
+          notification.type === 'success' 
+            ? 'bg-green-50 border-green-500 text-green-800' 
+            : 'bg-red-50 border-red-500 text-red-800'
+        }`}>
+          <div className="flex items-center gap-2">
+            {notification.type === 'success' ? (
+              <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center">
+                <span className="text-white text-xs">✓</span>
+              </div>
+            ) : (
+              <div className="w-5 h-5 rounded-full bg-red-500 flex items-center justify-center">
+                <span className="text-white text-xs">×</span>
+              </div>
+            )}
+            <span className="font-medium">{notification.message}</span>
+            <button 
+              onClick={() => setNotification(null)}
+              className="ml-2 text-gray-400 hover:text-gray-600"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
         {/* Overview Tab */}
@@ -492,10 +692,48 @@ export const Dashboard: React.FC = () => {
         {/* Table Tab */}
         {activeTab === 'table' && (
           <div className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <h2 className="text-lg font-semibold text-gray-900">Detailed CMS Comparison</h2>
               <div className="text-sm text-gray-500">
                 Click any row to focus on that CMS
+              </div>
+            </div>
+            
+            {/* Data Persistence Info */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="flex items-start gap-3">
+                <div className="p-1 bg-blue-100 rounded">
+                  <FileText className="w-4 h-4 text-blue-600" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-sm font-medium text-blue-900 mb-1">Data Persistence & Backup</h3>
+                  <p className="text-sm text-blue-700 mb-2">
+                    Your edits are automatically saved to browser storage and can be exported for permanent backup.
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      onClick={exportDataAsJson}
+                      className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 rounded-md text-xs hover:bg-blue-200 transition-colors"
+                    >
+                      <Download size={12} />
+                      Backup as JSON
+                    </button>
+                    <button
+                      onClick={exportDataAsMarkdown}
+                      className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 rounded-md text-xs hover:bg-blue-200 transition-colors"
+                    >
+                      <FileText size={12} />
+                      Export Report
+                    </button>
+                    <button
+                      onClick={importDataFromJson}
+                      className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 rounded-md text-xs hover:bg-blue-200 transition-colors"
+                    >
+                      <Upload size={12} />
+                      Restore Backup
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
             <CMSTable
