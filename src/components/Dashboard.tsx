@@ -17,6 +17,7 @@ import { CMSEditor } from './CMSEditor';
 import { MigrationTimeline } from './MigrationTimeline';
 import { ComparisonMatrix } from './ComparisonMatrix';
 import { RiskMatrix } from './RiskMatrix';
+import { ComprehensiveAnalysis } from './ComprehensiveAnalysis';
 import { dashboardData } from '../data/cmsData';
 import type { CMSVendor } from '../types/cms';
 
@@ -24,10 +25,10 @@ export const Dashboard: React.FC = () => {
   const [vendors, setVendors] = useState<CMSVendor[]>(dashboardData.vendors);
   const [editingVendor, setEditingVendor] = useState<CMSVendor | null>(null);
   const [selectedVendor, setSelectedVendor] = useState<string>('');
-  const [activeTab, setActiveTab] = useState<'overview' | 'comparison' | 'migration' | 'risks' | 'table'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'analysis' | 'comparison' | 'migration' | 'risks' | 'table'>('overview');
   const [chartType, setChartType] = useState<'radar' | 'bar'>('radar');
   const [showOnlyTop3, setShowOnlyTop3] = useState(true);
-  const [compareVendors, setCompareVendors] = useState<string[]>(['sanity', 'craft', 'strapi']);
+  const [compareVendors, setCompareVendors] = useState<string[]>(['sanity', 'craft', 'strapi', 'wordpress']);
 
   // Auto-save to localStorage
   useEffect(() => {
@@ -150,7 +151,8 @@ export const Dashboard: React.FC = () => {
 
   const tabs = [
     { id: 'overview', label: 'Overview', icon: TrendingUp },
-    { id: 'comparison', label: 'Compare', icon: BarChart },
+    { id: 'analysis', label: 'Analysis', icon: BarChart },
+    { id: 'comparison', label: 'Compare', icon: Filter },
     { id: 'migration', label: 'Migration', icon: Clock },
     { id: 'risks', label: 'Risks', icon: AlertTriangle },
     { id: 'table', label: 'Data Table', icon: Settings }
@@ -352,6 +354,19 @@ export const Dashboard: React.FC = () => {
                 selectedVendors={topVendors.map(v => v.id)}
               />
             </div>
+          </div>
+        )}
+
+        {/* Analysis Tab */}
+        {activeTab === 'analysis' && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-gray-900">Comprehensive CMS Analysis</h2>
+              <div className="text-sm text-gray-500">
+                Complete evaluation of {vendors.length} platforms with strategic insights
+              </div>
+            </div>
+            <ComprehensiveAnalysis vendors={vendors} />
           </div>
         )}
 
