@@ -28,23 +28,36 @@ export const Dashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'overview' | 'analysis' | 'comparison' | 'migration' | 'risks' | 'table'>('overview');
   const [chartType, setChartType] = useState<'radar' | 'bar'>('radar');
   const [showOnlyTop3, setShowOnlyTop3] = useState(true);
-  const [compareVendors, setCompareVendors] = useState<string[]>(['sanity', 'craft', 'strapi', 'wordpress']);
+  const [compareVendors, setCompareVendors] = useState<string[]>(['sanity', 'craft', 'strapi']);
 
-  // Auto-save to localStorage
+  // Auto-save to localStorage with version check
   useEffect(() => {
     const savedData = localStorage.getItem('cms-dashboard-data');
     if (savedData) {
       try {
         const parsed = JSON.parse(savedData);
-        setVendors(parsed.vendors || dashboardData.vendors);
+        // Check if saved data version matches current version
+        if (parsed.version === '2.0' && parsed.vendors) {
+          setVendors(parsed.vendors);
+        } else {
+          // Clear old data and use fresh data
+          localStorage.removeItem('cms-dashboard-data');
+          setVendors(dashboardData.vendors);
+        }
       } catch (error) {
         console.error('Failed to load saved data:', error);
+        localStorage.removeItem('cms-dashboard-data');
+        setVendors(dashboardData.vendors);
       }
     }
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('cms-dashboard-data', JSON.stringify({ vendors, lastUpdated: new Date().toISOString() }));
+    localStorage.setItem('cms-dashboard-data', JSON.stringify({ 
+      vendors, 
+      lastUpdated: new Date().toISOString(),
+      version: '2.0'
+    }));
   }, [vendors]);
 
   const handleSaveVendor = (updatedVendor: CMSVendor) => {
@@ -163,32 +176,40 @@ export const Dashboard: React.FC = () => {
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-600 rounded-lg" aria-hidden="true">
-                <BarChart className="w-6 h-6 text-white" />
+          <div className="flex items-center justify-between h-16 min-h-16">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+              <div className="p-1.5 sm:p-2 bg-blue-600 rounded-lg flex-shrink-0" aria-hidden="true">
+                <BarChart className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
               </div>
-              <div>
-                <h1 className="text-xl font-semibold text-gray-900">CMS Evaluation Dashboard</h1>
-                <p className="text-sm text-gray-500">HubSpot Migration Analysis & Decision Support</p>
+              <div className="min-w-0 flex-1">
+                <h1 className="text-lg sm:text-xl font-semibold text-gray-900 truncate">CMS Evaluation Dashboard</h1>
+                <p className="text-xs sm:text-sm text-gray-500 truncate">HubSpot Migration Analysis & Decision Support</p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
               <button
                 onClick={exportData}
-                className="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                className="hidden sm:flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 aria-label="Export dashboard data as JSON"
               >
                 <Download size={16} aria-hidden="true" />
-                Export Data
+                <span className="hidden md:inline">Export Data</span>
+                <span className="md:hidden">Export</span>
+              </button>
+              <button
+                onClick={exportData}
+                className="sm:hidden p-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                aria-label="Export dashboard data as JSON"
+              >
+                <Download size={16} aria-hidden="true" />
               </button>
               <button
                 onClick={handleAddVendor}
-                className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                className="flex items-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                 aria-label="Add new CMS for evaluation"
               >
                 <Plus size={16} aria-hidden="true" />
-                Add CMS
+                <span className="hidden sm:inline">Add CMS</span>
               </button>
             </div>
           </div>
@@ -198,21 +219,22 @@ export const Dashboard: React.FC = () => {
       {/* Navigation Tabs */}
       <nav className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex space-x-8 overflow-x-auto">
+          <div className="flex space-x-2 sm:space-x-4 lg:space-x-8 overflow-x-auto scrollbar-hide">
             {tabs.map(tab => {
               const Icon = tab.icon;
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as any)}
-                  className={`flex items-center gap-2 py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
+                  className={`flex items-center gap-1 sm:gap-2 py-3 sm:py-4 px-2 sm:px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap transition-colors flex-shrink-0 ${
                     activeTab === tab.id
                       ? 'border-blue-500 text-blue-600'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                   }`}
                 >
-                  <Icon size={16} />
-                  {tab.label}
+                  <Icon size={14} className="sm:w-4 sm:h-4" />
+                  <span className="hidden sm:inline">{tab.label}</span>
+                  <span className="sm:hidden">{tab.label.split(' ')[0]}</span>
                 </button>
               );
             })}
@@ -220,12 +242,12 @@ export const Dashboard: React.FC = () => {
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
         {/* Overview Tab */}
         {activeTab === 'overview' && (
           <div className="space-y-8">
             {/* Key Metrics */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-blue-100 rounded-lg">

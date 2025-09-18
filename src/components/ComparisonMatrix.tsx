@@ -155,10 +155,10 @@ export const ComparisonMatrix: React.FC<ComparisonMatrixProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-lg border border-gray-200">
+    <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
       {/* Header */}
-      <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-        <div className="flex items-center justify-between">
+      <div className="px-4 sm:px-6 py-4 border-b border-gray-200 bg-gray-50">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
           <h3 className="text-lg font-semibold text-gray-900">Side-by-Side Comparison</h3>
           <div className="text-sm text-gray-600">
             Comparing {compareVendors.length} CMS{compareVendors.length !== 1 ? 'es' : ''}
@@ -167,31 +167,33 @@ export const ComparisonMatrix: React.FC<ComparisonMatrixProps> = ({
       </div>
 
       {/* Vendor Headers */}
-      <div className="grid grid-cols-1 border-b border-gray-200" style={{ 
-        gridTemplateColumns: `minmax(200px, 1fr) repeat(${compareVendors.length}, minmax(180px, 1fr))` 
-      }}>
-        <div className="px-6 py-4 bg-gray-50 border-r border-gray-200">
-          <span className="font-medium text-gray-900">Feature</span>
-        </div>
-        {compareVendors.map(vendor => (
-          <div key={vendor.id} className="px-4 py-4 bg-gray-50 border-r border-gray-200 last:border-r-0">
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-2 mb-1">
-                {vendor.priority <= 3 && (
-                  <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                )}
-                <h4 className="font-semibold text-gray-900">{vendor.name}</h4>
-              </div>
-              <div className="text-xs text-gray-500">{vendor.type}</div>
-              <button
-                onClick={() => onVendorToggle(vendor.id)}
-                className="mt-2 text-xs text-red-600 hover:text-red-800"
-              >
-                Remove
-              </button>
-            </div>
+      <div className="overflow-x-auto">
+        <div className="grid grid-cols-1 border-b border-gray-200 min-w-max" style={{ 
+          gridTemplateColumns: `minmax(150px, 200px) repeat(${compareVendors.length}, minmax(150px, 180px))` 
+        }}>
+          <div className="px-4 sm:px-6 py-4 bg-gray-50 border-r border-gray-200">
+            <span className="font-medium text-gray-900 text-sm sm:text-base">Feature</span>
           </div>
-        ))}
+          {compareVendors.map(vendor => (
+            <div key={vendor.id} className="px-3 sm:px-4 py-4 bg-gray-50 border-r border-gray-200 last:border-r-0">
+              <div className="text-center">
+                <div className="flex items-center justify-center gap-1 sm:gap-2 mb-1">
+                  {vendor.priority <= 3 && (
+                    <Star className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-500 fill-current flex-shrink-0" />
+                  )}
+                  <h4 className="font-semibold text-gray-900 text-sm sm:text-base truncate">{vendor.name}</h4>
+                </div>
+                <div className="text-xs text-gray-500 truncate">{vendor.type}</div>
+                <button
+                  onClick={() => onVendorToggle(vendor.id)}
+                  className="mt-2 text-xs text-red-600 hover:text-red-800 px-2 py-1 rounded hover:bg-red-50 transition-colors"
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Content Sections */}
@@ -211,35 +213,37 @@ export const ComparisonMatrix: React.FC<ComparisonMatrixProps> = ({
 
             {/* Section Rows */}
             {expandedSections.has(section.id) && (
-              <div className="divide-y divide-gray-100">
-                {section.rows.map(row => (
-                  <div key={row.label} className="grid grid-cols-1" style={{ 
-                    gridTemplateColumns: `minmax(200px, 1fr) repeat(${compareVendors.length}, minmax(180px, 1fr))` 
-                  }}>
-                    <div className="px-6 py-3 bg-gray-25 border-r border-gray-200 text-sm font-medium text-gray-700">
-                      {row.label}
-                    </div>
-                    {compareVendors.map(vendor => {
-                      const value = getValue(vendor, row.key);
-                      return (
-                        <div key={vendor.id} className="px-4 py-3 border-r border-gray-200 last:border-r-0">
-                          <div className="flex items-center gap-2 justify-center text-sm">
-                            {row.render ? (
-                              row.render(vendor)
-                            ) : (
-                              <>
-                                {getValueIcon(value, row.type as any)}
-                                <span className={row.type === 'score' ? 'font-medium' : ''}>
-                                  {typeof value === 'boolean' ? '' : value}
-                                </span>
-                              </>
-                            )}
+              <div className="overflow-x-auto">
+                <div className="divide-y divide-gray-100">
+                  {section.rows.map(row => (
+                    <div key={row.label} className="grid grid-cols-1 min-w-max" style={{ 
+                      gridTemplateColumns: `minmax(150px, 200px) repeat(${compareVendors.length}, minmax(150px, 180px))` 
+                    }}>
+                      <div className="px-4 sm:px-6 py-3 bg-gray-25 border-r border-gray-200 text-xs sm:text-sm font-medium text-gray-700">
+                        {row.label}
+                      </div>
+                      {compareVendors.map(vendor => {
+                        const value = getValue(vendor, row.key);
+                        return (
+                          <div key={vendor.id} className="px-3 sm:px-4 py-3 border-r border-gray-200 last:border-r-0">
+                            <div className="flex items-center gap-1 sm:gap-2 justify-center text-xs sm:text-sm">
+                              {row.render ? (
+                                row.render(vendor)
+                              ) : (
+                                <>
+                                  {getValueIcon(value, row.type as any)}
+                                  <span className={row.type === 'score' ? 'font-medium' : ''}>
+                                    {typeof value === 'boolean' ? '' : value}
+                                  </span>
+                                </>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                ))}
+                        );
+                      })}
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
@@ -247,24 +251,24 @@ export const ComparisonMatrix: React.FC<ComparisonMatrixProps> = ({
       </div>
 
       {/* Highlights Section */}
-      <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
+      <div className="px-4 sm:px-6 py-4 bg-gray-50 border-t border-gray-200">
         <h4 className="font-medium text-gray-900 mb-3">Key Highlights</h4>
-        <div className="grid gap-4" style={{ 
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" style={compareVendors.length > 3 ? {} : { 
           gridTemplateColumns: `repeat(${compareVendors.length}, 1fr)` 
         }}>
           {compareVendors.map(vendor => (
-            <div key={vendor.id} className="space-y-2">
-              <h5 className="font-medium text-gray-800">{vendor.name}</h5>
+            <div key={vendor.id} className="space-y-2 min-w-0">
+              <h5 className="font-medium text-gray-800 text-sm sm:text-base truncate">{vendor.name}</h5>
               <ul className="space-y-1">
                 {vendor.metadata.highlights.slice(0, 3).map((highlight, index) => (
                   <li key={index} className="text-xs text-gray-600 flex items-start gap-1">
                     <span className="text-blue-500 flex-shrink-0 mt-0.5">•</span>
-                    <span>{highlight}</span>
+                    <span className="break-words">{highlight}</span>
                   </li>
                 ))}
               </ul>
               <div className="mt-2 pt-2 border-t border-gray-200">
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-gray-500 break-words">
                   <strong>Best for:</strong> {vendor.metadata.bestFor}
                 </p>
               </div>

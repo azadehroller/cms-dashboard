@@ -36,4 +36,25 @@
   .scrollbar-thin::-webkit-scrollbar-thumb:hover {
     background: #94a3b8;
   }
+  
+  /* Hide scrollbars on mobile for cleaner look */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Mobile-friendly table scrolling */
+  @media (max-width: 640px) {
+    .overflow-x-auto {
+      scroll-snap-type: x mandatory;
+    }
+    
+    .overflow-x-auto > * {
+      scroll-snap-align: start;
+    }
+  }
 }

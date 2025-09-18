@@ -66,11 +66,11 @@ export const CMSTable: React.FC<CMSTableProps> = ({
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-      <div className="overflow-x-auto">
-        <table className="w-full">
+      <div className="overflow-x-auto scrollbar-thin">
+        <table className="w-full min-w-max">
           <thead className="bg-gray-50 border-b border-gray-200">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                 <button
                   onClick={() => handleSort('priority')}
                   className="flex items-center gap-1 hover:text-gray-700"
@@ -81,7 +81,7 @@ export const CMSTable: React.FC<CMSTableProps> = ({
                   )}
                 </button>
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                 <button
                   onClick={() => handleSort('name')}
                   className="flex items-center gap-1 hover:text-gray-700"
@@ -92,10 +92,10 @@ export const CMSTable: React.FC<CMSTableProps> = ({
                   )}
                 </button>
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                 Type
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                 <button
                   onClick={() => handleSort('totalScore')}
                   className="flex items-center gap-1 hover:text-gray-700"
@@ -106,16 +106,16 @@ export const CMSTable: React.FC<CMSTableProps> = ({
                   )}
                 </button>
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                 Key Strengths
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                 Migration
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                 Cost Est.
               </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th className="px-3 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">
                 Actions
               </th>
             </tr>
@@ -129,24 +129,24 @@ export const CMSTable: React.FC<CMSTableProps> = ({
                 } ${vendor.priority <= 3 ? 'border-l-4 border-l-blue-500' : ''}`}
                 onClick={() => onSelect && onSelect(vendor.id)}
               >
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center gap-2">
+                <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
+                  <div className="flex items-center gap-1 sm:gap-2">
                     {getPriorityIcon(vendor.priority)}
-                    <span className="text-sm font-medium text-gray-900">
+                    <span className="text-xs sm:text-sm font-medium text-gray-900">
                       {vendor.priority <= 3 ? ['Top Choice', '2nd Choice', '3rd Choice'][vendor.priority - 1] : `#${vendor.priority}`}
                     </span>
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">{vendor.name}</div>
-                  <div className="text-sm text-gray-500">{vendor.apiModel}</div>
+                <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
+                  <div className="text-xs sm:text-sm font-medium text-gray-900">{vendor.name}</div>
+                  <div className="text-xs sm:text-sm text-gray-500 truncate max-w-24 sm:max-w-none">{vendor.apiModel}</div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">{vendor.type}</div>
-                  <div className="text-sm text-gray-500">{vendor.hosting}</div>
+                <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
+                  <div className="text-xs sm:text-sm text-gray-900">{vendor.type}</div>
+                  <div className="text-xs sm:text-sm text-gray-500 truncate max-w-20 sm:max-w-none">{vendor.hosting}</div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getScoreColor(vendor.totalScore)}`}>
+                <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
+                  <div className={`inline-flex items-center px-2 sm:px-2.5 py-0.5 rounded-full text-xs font-medium ${getScoreColor(vendor.totalScore)}`}>
                     {vendor.totalScore}/100
                   </div>
                   <div className="mt-1">
@@ -158,8 +158,8 @@ export const CMSTable: React.FC<CMSTableProps> = ({
                     </div>
                   </div>
                 </td>
-                <td className="px-6 py-4">
-                  <div className="text-sm text-gray-900 max-w-xs">
+                <td className="px-3 sm:px-6 py-4">
+                  <div className="text-xs sm:text-sm text-gray-900 max-w-32 sm:max-w-xs">
                     <div className="space-y-1">
                       {vendor.metadata.highlights.slice(0, 2).map((highlight, i) => (
                         <div key={i} className="text-xs text-gray-600 flex items-start gap-1">
@@ -175,23 +175,23 @@ export const CMSTable: React.FC<CMSTableProps> = ({
                     </div>
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
                   <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getEffortColor(vendor.migration.effort)}`}>
                     {vendor.migration.effort}
                   </div>
-                  <div className="text-sm text-gray-500 mt-1">
-                    {vendor.migration.timeWeeks} weeks
+                  <div className="text-xs sm:text-sm text-gray-500 mt-1">
+                    {vendor.migration.timeWeeks}w
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">
+                <td className="px-3 sm:px-6 py-4 whitespace-nowrap">
+                  <div className="text-xs sm:text-sm text-gray-900">
                     {vendor.cost.estimatedTotal}
                   </div>
                   <div className="text-xs text-gray-500">
                     Ops: {vendor.cost.opsTime}
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-right text-xs sm:text-sm font-medium">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -199,8 +199,8 @@ export const CMSTable: React.FC<CMSTableProps> = ({
                     }}
                     className="text-blue-600 hover:text-blue-900 flex items-center gap-1 px-2 py-1 rounded hover:bg-blue-50 transition-colors"
                   >
-                    <Edit3 size={14} />
-                    Edit
+                    <Edit3 size={12} className="sm:w-4 sm:h-4" />
+                    <span className="hidden sm:inline">Edit</span>
                   </button>
                 </td>
               </tr>

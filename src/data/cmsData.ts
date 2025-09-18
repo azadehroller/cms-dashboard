@@ -598,5 +598,6 @@ export const dashboardWeights = {
 export const dashboardData: DashboardData = {
   vendors: cmsVendors,
   weights: dashboardWeights,
-  lastUpdated: new Date().toISOString()
+  lastUpdated: new Date().toISOString(),
+  version: '2.0' // Force refresh of localStorage
 };
